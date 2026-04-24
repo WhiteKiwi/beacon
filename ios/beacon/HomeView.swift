@@ -69,11 +69,9 @@ struct HomeView: View {
 
     private func sendManually() {
         isSending = true
-        LocationManager.shared.sendManually { result in
+        LocationManager.shared.sendManually { error in
             isSending = false
-            if case .failure(let message) = result {
-                errorMessage = message
-            }
+            errorMessage = error
         }
     }
 }

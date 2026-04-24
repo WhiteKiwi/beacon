@@ -29,16 +29,17 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         manager.startMonitoringSignificantLocationChanges()
     }
 
-    func sendManually(completion: @escaping (Result<Void, String>) -> Void) {
+    // completion: nil = 성공, String = 에러 메시지
+    func sendManually(completion: @escaping (String?) -> Void) {
         guard let location = manager.location else {
-            completion(.failure("현재 위치를 가져올 수 없습니다.\n위치 권한을 확인해주세요."))
+            completion("현재 위치를 가져올 수 없습니다.\n위치 권한을 확인해주세요.")
             return
         }
-        post(location: location) { [weak self] result in
-            if case .success = result {
+        post(location: location) { [weak self] error in
+            if error == nil {
                 self?.appendHistory(location)
             }
-            completion(result)
+            completion(error)
         }
     }
 
@@ -64,13 +65,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
 
-    private func post(location: CLLocation, completion: ((Result<Void, String>) -> Void)?) {
+    private func post(location: CLLocation, completion: ((String?) -> Void)?) {
         let defaults = UserDefaults.standard
         guard
             let serverURL = defaults.string(forKey: "serverURL"),
             let url = URL(string: serverURL)
         else {
-            completion?(.failure("서버 URL이 설정되지 않았습니다."))
+            completion?("서버 URL이 설정되지 않았습니다.")
             return
         }
 
@@ -95,16 +96,16 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             guard let completion else { return }
 
             if let error = error {
-                DispatchQueue.main.async { completion(.failure(error.localizedDescription)) }
+                DispatchQueue.main.async { completion(error.localizedDescription) }
                 return
             }
 
             let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
             if (200..<300).contains(statusCode) {
-                DispatchQueue.main.async { completion(.success(())) }
+                DispatchQueue.main.async { completion(nil) }
             } else {
                 let pretty = data.flatMap { Self.prettyJSON($0) } ?? "응답 없음"
-                DispatchQueue.main.async { completion(.failure("[\(statusCode)]\n\(pretty)")) }
+                DispatchQueue.main.async { completion("[\(statusCode)]\n\(pretty)") }
             }
         }.resume()
     }
