@@ -23,7 +23,11 @@
 - `UserDefaults`에 `[LocationEntry]` JSON으로 저장
 - 최대 10건 유지 (초과 시 오래된 것 제거)
 - 로드 시 `timestamp` 내림차순 정렬 (최신이 맨 위)
-- 수동 전송은 성공 응답 확인 후 이력 추가, 자동 전송(significant change)은 즉시 추가
+- `LocationEntry`에 `success: Bool` 포함
+- 수동 전송은 성공/실패 여부를 응답 확인 후 이력에 기록 (실패도 포함)
+- 자동 전송(significant change)은 HTTP 응답 대기 없이 `success: true`로 즉시 추가
+  → 백그라운드 전송 결과를 UI에서 추적하는 것이 복잡하고 실패 시 재전송 정책도 없기 때문
+- 홈 화면에서 성공/실패를 아이콘(✓ / ✕)과 색상으로 구분 표시
 
 ## 수동 전송 응답 처리
 
