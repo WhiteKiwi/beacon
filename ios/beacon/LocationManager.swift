@@ -7,6 +7,7 @@ struct LocationEntry: Codable, Identifiable {
     let timestamp: Date
     let latitude: Double
     let longitude: Double
+    let success: Bool
 }
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
@@ -36,25 +37,24 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             return
         }
         post(location: location) { [weak self] error in
-            if error == nil {
-                self?.appendHistory(location)
-            }
+            self?.appendHistory(location, success: error == nil)
             completion(error)
         }
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
-        appendHistory(location)
+        appendHistory(location, success: true)
         post(location: location, completion: nil)
     }
 
-    private func appendHistory(_ location: CLLocation) {
+    private func appendHistory(_ location: CLLocation, success: Bool) {
         let entry = LocationEntry(
             id: UUID(),
             timestamp: location.timestamp,
             latitude: location.coordinate.latitude,
-            longitude: location.coordinate.longitude
+            longitude: location.coordinate.longitude,
+            success: success
         )
         DispatchQueue.main.async {
             self.history.insert(entry, at: 0)

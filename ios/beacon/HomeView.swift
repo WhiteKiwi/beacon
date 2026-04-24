@@ -22,12 +22,16 @@ struct HomeView: View {
                     )
                 } else {
                     List(locationManager.history) { entry in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(dateFormatter.string(from: entry.timestamp))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Text(String(format: "%.6f, %.6f", entry.latitude, entry.longitude))
-                                .font(.system(.body, design: .monospaced))
+                        HStack(spacing: 12) {
+                            Image(systemName: entry.success ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                .foregroundStyle(entry.success ? .green : .red)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(dateFormatter.string(from: entry.timestamp))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Text(String(format: "%.6f, %.6f", entry.latitude, entry.longitude))
+                                    .font(.system(.body, design: .monospaced))
+                            }
                         }
                         .padding(.vertical, 2)
                     }
