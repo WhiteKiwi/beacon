@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @AppStorage("serverURL") private var serverURL = ""
     @AppStorage("deviceID") private var deviceID = ""
+    @AppStorage("apiSecret") private var apiSecret = ""
     @State private var isMonitoring = false
     @ObservedObject private var locationManager = LocationManager.shared
 
@@ -23,6 +24,7 @@ struct ContentView: View {
                     TextField("Device ID", text: $deviceID)
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
+                    SecureField("API Secret", text: $apiSecret)
                 }
 
                 Section {
@@ -30,7 +32,7 @@ struct ContentView: View {
                         locationManager.start()
                         isMonitoring = true
                     }
-                    .disabled(serverURL.isEmpty || deviceID.isEmpty || isMonitoring)
+                    .disabled(serverURL.isEmpty || deviceID.isEmpty || apiSecret.isEmpty || isMonitoring)
                 }
 
                 if isMonitoring {

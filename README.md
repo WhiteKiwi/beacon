@@ -7,6 +7,14 @@ iOS 앱에서 위치 변화를 감지하여 지정한 서버로 실시간 전송
 - [`ios/`](./ios/) — iOS 앱
 - `server/` — NestJS 서버 (수신 엔드포인트)
 
+## 인증
+
+모든 서버 엔드포인트는 `Authorization` 헤더에 Bearer 토큰이 필요합니다.
+
+```
+Authorization: Bearer {API_SECRET}
+```
+
 ## API 스펙
 
 ### 위치 전송

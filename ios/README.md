@@ -2,7 +2,7 @@
 
 ## 동작 방식
 
-1. 앱 실행 → 서버 URL + Device ID 입력 → 저장 및 시작
+1. 앱 실행 → 서버 URL + Device ID + API Secret 입력 → 저장 및 시작
 2. iOS `startMonitoringSignificantLocationChanges()` 활성화
 3. 위치가 크게 변경될 때마다 서버로 HTTP POST 전송
 4. 앱이 백그라운드/종료 상태여도 동작 (iOS가 앱을 깨워서 전송)
@@ -13,6 +13,14 @@
 - iOS 14+
 - 실기기 필요 (시뮬레이터는 significant location change 미지원)
 - 위치 권한: **항상 허용** (백그라운드 전송을 위해 필요)
+
+## 설정 항목
+
+| 항목 | 설명 |
+|------|------|
+| Server URL | 위치를 전송할 서버 엔드포인트 |
+| Device ID | 기기 식별자 (전송 바디의 `id` 필드) |
+| API Secret | Bearer 토큰 (`Authorization: Bearer {값}`) |
 
 ## 빌드 방법
 

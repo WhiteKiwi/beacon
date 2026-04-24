@@ -67,9 +67,12 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
         guard let data = try? JSONSerialization.data(withJSONObject: body) else { return }
 
+        let secret = defaults.string(forKey: "apiSecret") ?? ""
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(secret)", forHTTPHeaderField: "Authorization")
         request.httpBody = data
 
         URLSession.shared.dataTask(with: request).resume()
