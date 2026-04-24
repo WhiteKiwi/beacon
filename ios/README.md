@@ -1,12 +1,19 @@
 # Beacon iOS
 
+## 화면 구성
+
+- **최초 실행** — 서버 URL, Device ID, API Secret 입력 후 시작
+- **홈 화면** — 최근 전송 이력 10건 표시
+- **설정** — 홈 우상단 톱니바퀴 아이콘으로 진입, URL/ID/Secret 수정 가능
+
 ## 동작 방식
 
-1. 앱 실행 → 서버 URL + Device ID + API Secret 입력 → 저장 및 시작
-2. iOS `startMonitoringSignificantLocationChanges()` 활성화
-3. 위치가 크게 변경될 때마다 서버로 HTTP POST 전송
-4. 앱이 백그라운드/종료 상태여도 동작 (iOS가 앱을 깨워서 전송)
-5. 최근 전송 이력 10건을 앱 화면에서 확인 가능
+1. 최초 실행 → 설정 화면에서 서버 URL + Device ID + API Secret 입력 → 시작하기
+2. 이후 실행 → 홈 화면 바로 표시, 위치 모니터링 자동 재개
+3. iOS `startMonitoringSignificantLocationChanges()` 활성화
+4. 위치가 크게 변경될 때마다 서버로 HTTP POST 전송
+5. 앱이 백그라운드/종료 상태여도 동작 (iOS가 앱을 깨워서 전송)
+6. 최근 전송 이력 10건을 홈 화면에서 확인 가능
 
 ## 요구사항
 
