@@ -1,9 +1,10 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module.js';
 import { LocationsService } from '../src/locations/locations.service.js';
+import { validationPipe } from '../src/validation.pipe.js';
 
 const SECRET = 'test-secret';
 const AUTH = `Bearer ${SECRET}`;
@@ -35,7 +36,7 @@ describe('Locations (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+    app.useGlobalPipes(validationPipe);
     await app.init();
   });
 
