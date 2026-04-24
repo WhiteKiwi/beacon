@@ -1,5 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { existsSync, mkdirSync, readdirSync, readFileSync, promises } from 'fs';
+import { mkdirSync, readdirSync, readFileSync, promises } from 'fs';
 import { join } from 'path';
 import { LocationDto } from './location.dto.js';
 
