@@ -18,6 +18,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
     private let historyKey = "locationHistory"
     private let maxHistory = 10
+    private static let iso8601 = ISO8601DateFormatter()
 
     private override init() {
         super.init()
@@ -30,7 +31,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         manager.startMonitoringSignificantLocationChanges()
     }
 
-    // completion: nil = 성공, String = 에러 메시지
     func sendManually(completion: @escaping (String?) -> Void) {
         guard let location = manager.location else {
             completion("현재 위치를 가져올 수 없습니다.\n위치 권한을 확인해주세요.")
@@ -58,10 +58,10 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             success: success
         )
         DispatchQueue.main.async {
-            self.history.append(entry)
-            self.history.sort { $0.timestamp > $1.timestamp }
+            let idx = self.history.firstIndex(where: { $0.timestamp < entry.timestamp }) ?? self.history.endIndex
+            self.history.insert(entry, at: idx)
             if self.history.count > self.maxHistory {
-                self.history = Array(self.history.prefix(self.maxHistory))
+                self.history.removeLast()
             }
             self.saveHistory()
         }
@@ -83,10 +83,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             "id": id,
             "latitude": location.coordinate.latitude,
             "longitude": location.coordinate.longitude,
-            "timestamp": ISO8601DateFormatter().string(from: location.timestamp)
+            "timestamp": Self.iso8601.string(from: location.timestamp)
         ]
 
-        guard let data = try? JSONSerialization.data(withJSONObject: body) else { return }
+        guard let data = try? JSONSerialization.data(withJSONObject: body) else {
+            completion("요청 직렬화에 실패했습니다.")
+            return
+        }
 
         var request = URLRequest(url: url, timeoutInterval: 5)
         request.httpMethod = "POST"
