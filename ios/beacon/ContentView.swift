@@ -4,6 +4,13 @@ struct ContentView: View {
     @AppStorage("serverURL") private var serverURL = ""
     @AppStorage("deviceID") private var deviceID = ""
     @State private var isMonitoring = false
+    @ObservedObject private var locationManager = LocationManager.shared
+
+    private let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "MM/dd HH:mm:ss"
+        return f
+    }()
 
     var body: some View {
         NavigationStack {
@@ -20,7 +27,7 @@ struct ContentView: View {
 
                 Section {
                     Button(isMonitoring ? "모니터링 중..." : "저장 및 시작") {
-                        LocationManager.shared.start()
+                        locationManager.start()
                         isMonitoring = true
                     }
                     .disabled(serverURL.isEmpty || deviceID.isEmpty || isMonitoring)
@@ -30,6 +37,21 @@ struct ContentView: View {
                     Section {
                         Label("위치 변화 감지 중", systemImage: "location.fill")
                             .foregroundStyle(.green)
+                    }
+                }
+
+                if !locationManager.history.isEmpty {
+                    Section("최근 전송 이력") {
+                        ForEach(locationManager.history) { entry in
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(dateFormatter.string(from: entry.timestamp))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Text(String(format: "%.6f, %.6f", entry.latitude, entry.longitude))
+                                    .font(.system(.body, design: .monospaced))
+                            }
+                            .padding(.vertical, 2)
+                        }
                     }
                 }
             }
