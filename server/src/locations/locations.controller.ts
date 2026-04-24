@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
   NotFoundException,
   Param,
   Post,
@@ -18,7 +17,6 @@ export class LocationsController {
   constructor(private readonly locations: LocationsService) {}
 
   @Post()
-  @HttpCode(201)
   save(@Body() dto: LocationDto): void {
     this.locations.save(dto);
   }

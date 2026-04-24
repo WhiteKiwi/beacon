@@ -1,11 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import {
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  writeFileSync,
-} from 'fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, promises } from 'fs';
 import { join } from 'path';
 import { LocationDto } from './location.dto.js';
 
@@ -17,7 +11,7 @@ export class LocationsService implements OnModuleInit {
   private cache = new Map<string, LocationDto[]>();
 
   onModuleInit() {
-    if (!existsSync(DATA_DIR)) return;
+    mkdirSync(DATA_DIR, { recursive: true });
 
     for (const file of readdirSync(DATA_DIR)) {
       if (!file.endsWith('.json')) continue;
@@ -37,16 +31,13 @@ export class LocationsService implements OnModuleInit {
     const updated = [...entries, location].slice(-MAX_ENTRIES);
 
     this.cache.set(id, updated);
-    this.persist(id, updated);
+    void promises.writeFile(
+      join(DATA_DIR, `${id}.json`),
+      JSON.stringify(updated, null, 2),
+    );
   }
 
   getLatest(id: string): LocationDto | undefined {
-    const entries = this.cache.get(id);
-    return entries?.at(-1);
-  }
-
-  private persist(id: string, entries: LocationDto[]): void {
-    if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
-    writeFileSync(join(DATA_DIR, `${id}.json`), JSON.stringify(entries, null, 2));
+    return this.cache.get(id)?.at(-1);
   }
 }

@@ -9,8 +9,11 @@ const makeContext = (authorization?: string) =>
     }),
   }) as unknown as ExecutionContext;
 
-const makeGuard = (secret: string) =>
-  new AuthGuard({ get: () => secret } as unknown as ConfigService);
+const makeGuard = (secret: string) => {
+  const guard = new AuthGuard({ get: () => secret } as unknown as ConfigService);
+  guard.onModuleInit();
+  return guard;
+};
 
 describe('AuthGuard', () => {
   it('올바른 토큰 → true', () => {
