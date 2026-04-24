@@ -44,8 +44,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
-        appendHistory(location, success: true)
-        post(location: location, completion: nil)
+        post(location: location) { [weak self] error in
+            self?.appendHistory(location, success: error == nil)
+        }
     }
 
     private func appendHistory(_ location: CLLocation, success: Bool) {
@@ -57,7 +58,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             success: success
         )
         DispatchQueue.main.async {
-            self.history.insert(entry, at: 0)
+            self.history.append(entry)
+            self.history.sort { $0.timestamp > $1.timestamp }
             if self.history.count > self.maxHistory {
                 self.history = Array(self.history.prefix(self.maxHistory))
             }
@@ -65,13 +67,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
 
-    private func post(location: CLLocation, completion: ((String?) -> Void)?) {
+    private func post(location: CLLocation, completion: @escaping (String?) -> Void) {
         let defaults = UserDefaults.standard
         guard
             let serverURL = defaults.string(forKey: "serverURL"),
             let url = URL(string: serverURL)
         else {
-            completion?("서버 URL이 설정되지 않았습니다.")
+            completion("서버 URL이 설정되지 않았습니다.")
             return
         }
 
@@ -86,15 +88,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
         guard let data = try? JSONSerialization.data(withJSONObject: body) else { return }
 
-        var request = URLRequest(url: url)
+        var request = URLRequest(url: url, timeoutInterval: 5)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(secret)", forHTTPHeaderField: "Authorization")
         request.httpBody = data
 
         URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let completion else { return }
-
             if let error = error {
                 DispatchQueue.main.async { completion(error.localizedDescription) }
                 return
