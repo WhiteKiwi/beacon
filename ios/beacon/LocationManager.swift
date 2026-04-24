@@ -130,6 +130,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             let data = UserDefaults.standard.data(forKey: historyKey),
             let saved = try? JSONDecoder().decode([LocationEntry].self, from: data)
         else { return }
-        history = saved
+        history = saved.sorted { $0.timestamp > $1.timestamp }
     }
 }
