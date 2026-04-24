@@ -1,17 +1,24 @@
-//
-//  beaconApp.swift
-//  beacon
-//
-//  Created by 장지훈 on 4/24/26.
-//
-
 import SwiftUI
 
 @main
-struct beaconApp: App {
+struct BeaconApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
+    }
+}
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        if launchOptions?[.location] != nil {
+            LocationManager.shared.start()
+        }
+        return true
     }
 }
