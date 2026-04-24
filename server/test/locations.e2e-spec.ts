@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { App } from 'supertest/types';
@@ -35,6 +35,7 @@ describe('Locations (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     await app.init();
   });
 
@@ -67,6 +68,30 @@ describe('Locations (e2e)', () => {
         .set('Authorization', 'Bearer wrong')
         .send(loc)
         .expect(404);
+    });
+
+    it('latitude 범위 초과 → 400', () => {
+      return request(app.getHttpServer())
+        .post('/locations')
+        .set('Authorization', AUTH)
+        .send({ ...loc, latitude: 91 })
+        .expect(400);
+    });
+
+    it('longitude 범위 초과 → 400', () => {
+      return request(app.getHttpServer())
+        .post('/locations')
+        .set('Authorization', AUTH)
+        .send({ ...loc, longitude: 181 })
+        .expect(400);
+    });
+
+    it('timestamp ISO 형식 아님 → 400', () => {
+      return request(app.getHttpServer())
+        .post('/locations')
+        .set('Authorization', AUTH)
+        .send({ ...loc, timestamp: 'not-a-date' })
+        .expect(400);
     });
   });
 
