@@ -29,10 +29,23 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         manager.startMonitoringSignificantLocationChanges()
     }
 
+    func sendManually(completion: @escaping (Result<Void, String>) -> Void) {
+        guard let location = manager.location else {
+            completion(.failure("현재 위치를 가져올 수 없습니다.\n위치 권한을 확인해주세요."))
+            return
+        }
+        post(location: location) { [weak self] result in
+            if case .success = result {
+                self?.appendHistory(location)
+            }
+            completion(result)
+        }
+    }
+
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
         appendHistory(location)
-        sendLocation(location)
+        post(location: location, completion: nil)
     }
 
     private func appendHistory(_ location: CLLocation) {
@@ -51,14 +64,18 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
 
-    private func sendLocation(_ location: CLLocation) {
+    private func post(location: CLLocation, completion: ((Result<Void, String>) -> Void)?) {
         let defaults = UserDefaults.standard
         guard
             let serverURL = defaults.string(forKey: "serverURL"),
             let url = URL(string: serverURL)
-        else { return }
+        else {
+            completion?(.failure("서버 URL이 설정되지 않았습니다."))
+            return
+        }
 
         let id = defaults.string(forKey: "deviceID") ?? ""
+        let secret = defaults.string(forKey: "apiSecret") ?? ""
         let body: [String: Any] = [
             "id": id,
             "latitude": location.coordinate.latitude,
@@ -68,15 +85,38 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
         guard let data = try? JSONSerialization.data(withJSONObject: body) else { return }
 
-        let secret = defaults.string(forKey: "apiSecret") ?? ""
-
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(secret)", forHTTPHeaderField: "Authorization")
         request.httpBody = data
 
-        URLSession.shared.dataTask(with: request).resume()
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let completion else { return }
+
+            if let error = error {
+                DispatchQueue.main.async { completion(.failure(error.localizedDescription)) }
+                return
+            }
+
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            if (200..<300).contains(statusCode) {
+                DispatchQueue.main.async { completion(.success(())) }
+            } else {
+                let pretty = data.flatMap { Self.prettyJSON($0) } ?? "응답 없음"
+                DispatchQueue.main.async { completion(.failure("[\(statusCode)]\n\(pretty)")) }
+            }
+        }.resume()
+    }
+
+    private static func prettyJSON(_ data: Data) -> String? {
+        guard
+            let obj = try? JSONSerialization.jsonObject(with: data),
+            let pretty = try? JSONSerialization.data(withJSONObject: obj, options: .prettyPrinted)
+        else {
+            return String(data: data, encoding: .utf8)
+        }
+        return String(data: pretty, encoding: .utf8)
     }
 
     private func saveHistory() {

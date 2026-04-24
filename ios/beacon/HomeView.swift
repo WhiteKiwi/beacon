@@ -2,6 +2,8 @@ import SwiftUI
 
 struct HomeView: View {
     @ObservedObject private var locationManager = LocationManager.shared
+    @State private var isSending = false
+    @State private var errorMessage: String? = nil
 
     private let dateFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -16,7 +18,7 @@ struct HomeView: View {
                     ContentUnavailableView(
                         "전송 이력 없음",
                         systemImage: "location.slash",
-                        description: Text("위치가 크게 변경되면 이력이 쌓입니다.")
+                        description: Text("위치가 크게 변경되거나 수동 전송하면 이력이 쌓입니다.")
                     )
                 } else {
                     List(locationManager.history) { entry in
@@ -33,13 +35,45 @@ struct HomeView: View {
             }
             .navigationTitle("Beacon")
             .toolbar {
-                NavigationLink(destination: SettingsView()) {
-                    Image(systemName: "gear")
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        sendManually()
+                    } label: {
+                        if isSending {
+                            ProgressView()
+                        } else {
+                            Image(systemName: "paperplane")
+                        }
+                    }
+                    .disabled(isSending)
                 }
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gear")
+                    }
+                }
+            }
+            .alert("전송 실패", isPresented: .init(
+                get: { errorMessage != nil },
+                set: { if !$0 { errorMessage = nil } }
+            )) {
+                Button("확인", role: .cancel) {}
+            } message: {
+                Text(errorMessage ?? "")
             }
         }
         .onAppear {
             LocationManager.shared.start()
+        }
+    }
+
+    private func sendManually() {
+        isSending = true
+        LocationManager.shared.sendManually { result in
+            isSending = false
+            if case .failure(let message) = result {
+                errorMessage = message
+            }
         }
     }
 }
