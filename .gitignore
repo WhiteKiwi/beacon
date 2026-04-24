@@ -46,6 +46,7 @@ AuthKey_*.p8
 # Node.js / NestJS
 node_modules/
 dist/
+.data/
 .env
 .env.*
 !.env.example
