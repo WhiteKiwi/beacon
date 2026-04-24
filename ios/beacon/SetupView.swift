@@ -4,6 +4,7 @@ struct SetupView: View {
     @AppStorage("serverURL") private var serverURL = ""
     @AppStorage("deviceID") private var deviceID = ""
     @AppStorage("apiSecret") private var apiSecret = ""
+    @AppStorage("isActivated") private var isActivated = false
 
     private var isFormValid: Bool {
         !serverURL.isEmpty && !deviceID.isEmpty && !apiSecret.isEmpty
@@ -26,6 +27,7 @@ struct SetupView: View {
                 Section {
                     Button("시작하기") {
                         LocationManager.shared.start()
+                        isActivated = true
                     }
                     .disabled(!isFormValid)
                 }
