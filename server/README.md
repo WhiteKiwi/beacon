@@ -4,6 +4,12 @@ iOS 앱으로부터 위치 데이터를 수신하고 조회하는 NestJS 서버.
 
 ## API
 
+모든 API 요청은 다음 인증 헤더가 필요합니다.
+
+```
+Authorization: Bearer <token>
+```
+
 ### 위치 수신
 
 ```

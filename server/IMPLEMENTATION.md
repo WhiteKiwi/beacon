@@ -2,7 +2,6 @@
 
 ## 인증
 
-- `Authorization: Bearer <token>` 방식
 - 토큰은 환경변수 `API_SECRET`에서 읽음
 - 인증 실패 시 404 반환 (엔드포인트 존재 노출 방지)
 
