@@ -62,3 +62,6 @@ pnpm-debug.log*
 .idea/
 *.swp
 *.swo
+
+# Local Claude settings
+.claude/
