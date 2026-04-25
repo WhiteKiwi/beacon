@@ -4,8 +4,8 @@ iOS 앱에서 위치 변화를 감지하여 지정한 서버로 실시간 전송
 
 ## 구성
 
-- [`ios/`](./ios/) — iOS 앱
-- `server/` — NestJS 서버 (수신 엔드포인트)
+- [`ios/`](./ios/SPEC.md) — iOS 앱
+- [`server/`](./server/SPEC.md) — NestJS 서버 (수신 엔드포인트)
 
 ## 인증
 
