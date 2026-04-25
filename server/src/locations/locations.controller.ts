@@ -11,7 +11,7 @@ import { AuthGuard } from '../auth.guard.js';
 import { LocationDto } from './location.dto.js';
 import { LocationsService } from './locations.service.js';
 
-@Controller('locations')
+@Controller('api/locations')
 @UseGuards(AuthGuard)
 export class LocationsController {
   constructor(private readonly locations: LocationsService) {}

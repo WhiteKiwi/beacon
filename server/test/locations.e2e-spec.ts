@@ -47,10 +47,10 @@ describe('Locations (e2e)', () => {
     delete process.env['API_SECRET'];
   });
 
-  describe('POST /locations', () => {
+  describe('POST /api/locations', () => {
     it('유효한 토큰 → 201', () => {
       return request(app.getHttpServer())
-        .post('/locations')
+        .post('/api/locations')
         .set('Authorization', AUTH)
         .send(loc)
         .expect(201);
@@ -58,14 +58,14 @@ describe('Locations (e2e)', () => {
 
     it('토큰 없음 → 404', () => {
       return request(app.getHttpServer())
-        .post('/locations')
+        .post('/api/locations')
         .send(loc)
         .expect(404);
     });
 
     it('잘못된 토큰 → 404', () => {
       return request(app.getHttpServer())
-        .post('/locations')
+        .post('/api/locations')
         .set('Authorization', 'Bearer wrong')
         .send(loc)
         .expect(404);
@@ -73,7 +73,7 @@ describe('Locations (e2e)', () => {
 
     it('latitude 범위 초과 → 400', () => {
       return request(app.getHttpServer())
-        .post('/locations')
+        .post('/api/locations')
         .set('Authorization', AUTH)
         .send({ ...loc, latitude: 91 })
         .expect(400);
@@ -81,7 +81,7 @@ describe('Locations (e2e)', () => {
 
     it('longitude 범위 초과 → 400', () => {
       return request(app.getHttpServer())
-        .post('/locations')
+        .post('/api/locations')
         .set('Authorization', AUTH)
         .send({ ...loc, longitude: 181 })
         .expect(400);
@@ -89,19 +89,19 @@ describe('Locations (e2e)', () => {
 
     it('timestamp ISO 형식 아님 → 400', () => {
       return request(app.getHttpServer())
-        .post('/locations')
+        .post('/api/locations')
         .set('Authorization', AUTH)
         .send({ ...loc, timestamp: 'not-a-date' })
         .expect(400);
     });
   });
 
-  describe('GET /locations/:id/latest', () => {
+  describe('GET /api/locations/:id/latest', () => {
     it('데이터 있음 → 200 + location', () => {
       mockLocationsService.getLatest.mockReturnValue(loc);
 
       return request(app.getHttpServer())
-        .get('/locations/kiwi/latest')
+        .get('/api/locations/kiwi/latest')
         .set('Authorization', AUTH)
         .expect(200)
         .expect(loc);
@@ -111,14 +111,14 @@ describe('Locations (e2e)', () => {
       mockLocationsService.getLatest.mockReturnValue(undefined);
 
       return request(app.getHttpServer())
-        .get('/locations/kiwi/latest')
+        .get('/api/locations/kiwi/latest')
         .set('Authorization', AUTH)
         .expect(404);
     });
 
     it('토큰 없음 → 404', () => {
       return request(app.getHttpServer())
-        .get('/locations/kiwi/latest')
+        .get('/api/locations/kiwi/latest')
         .expect(404);
     });
   });

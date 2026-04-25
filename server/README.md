@@ -7,7 +7,7 @@ iOS 앱으로부터 위치 데이터를 수신하고 조회하는 NestJS 서버.
 ### 위치 수신
 
 ```
-POST /locations
+POST /api/locations
 Content-Type: application/json
 ```
 
@@ -42,7 +42,7 @@ Content-Type: application/json
 ### 특정 ID의 최신 위치 조회
 
 ```
-GET /locations/:id/latest
+GET /api/locations/:id/latest
 ```
 
 **Response**
