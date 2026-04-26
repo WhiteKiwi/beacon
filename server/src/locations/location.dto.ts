@@ -1,9 +1,21 @@
-import { IsISO8601, IsNumber, IsString, Matches, Max, Min } from 'class-validator';
+import {
+  IsISO8601,
+  IsNumber,
+  IsString,
+  Matches,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export const LOCATION_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
+export const LOCATION_ID_MAX_LENGTH = 128;
 
 export class LocationDto {
   @IsString()
+  @MaxLength(LOCATION_ID_MAX_LENGTH, {
+    message: 'id는 128자 이하여야 합니다.',
+  })
   @Matches(LOCATION_ID_PATTERN, {
     message: 'id는 영문, 숫자, 하이픈, 밑줄만 사용할 수 있습니다.',
   })

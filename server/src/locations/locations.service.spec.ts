@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { BadRequestException } from '@nestjs/common';
-import { LocationsService } from './locations.service.js';
+import { MAX_TRACKED_IDS, LocationsService } from './locations.service.js';
 
 jest.mock('fs', () => ({
   mkdirSync: jest.fn(),
@@ -59,6 +59,14 @@ describe('LocationsService', () => {
       expect(() => service.onModuleInit()).not.toThrow();
       expect(service.getLatest('kiwi')).toBeUndefined();
     });
+
+    it('unsafe 파일명은 무시', () => {
+      (fs.readdirSync as jest.Mock).mockReturnValue(['../secret.json']);
+
+      service = new LocationsService();
+      expect(() => service.onModuleInit()).not.toThrow();
+      expect(service.getLatest('secret')).toBeUndefined();
+    });
   });
 
   describe('save', () => {
@@ -98,6 +106,25 @@ describe('LocationsService', () => {
         service.save({ ...loc(1), id: '../secret' }),
       ).toThrow(BadRequestException);
     });
+
+    it('너무 긴 id는 거부', () => {
+      expect(() =>
+        service.save({ ...loc(1), id: 'a'.repeat(129) }),
+      ).toThrow(BadRequestException);
+    });
+
+    it('새 id가 상한을 넘으면 거부', () => {
+      (service as any).cache = new Map(
+        Array.from({ length: MAX_TRACKED_IDS }, (_, i) => [
+          `id-${i}`,
+          [loc(1)],
+        ]),
+      );
+
+      expect(() => service.save({ ...loc(1), id: 'fresh-id' })).toThrow(
+        BadRequestException,
+      );
+    });
   });
 
   describe('getLatest', () => {
@@ -107,6 +134,12 @@ describe('LocationsService', () => {
 
     it('unsafe id는 거부', () => {
       expect(() => service.getLatest('../secret')).toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('너무 긴 id는 거부', () => {
+      expect(() => service.getLatest('a'.repeat(129))).toThrow(
         BadRequestException,
       );
     });

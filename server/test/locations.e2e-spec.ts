@@ -102,6 +102,14 @@ describe('Locations (e2e)', () => {
         .send({ ...loc, id: 'bad.id' })
         .expect(400);
     });
+
+    it('id가 너무 길면 400', () => {
+      return request(app.getHttpServer())
+        .post('/api/locations')
+        .set('Authorization', AUTH)
+        .send({ ...loc, id: 'a'.repeat(129) })
+        .expect(400);
+    });
   });
 
   describe('GET /api/locations/:id/latest', () => {
@@ -133,6 +141,13 @@ describe('Locations (e2e)', () => {
     it('id에 허용되지 않는 문자 포함 → 400', () => {
       return request(app.getHttpServer())
         .get('/api/locations/bad.id/latest')
+        .set('Authorization', AUTH)
+        .expect(400);
+    });
+
+    it('id가 너무 길면 400', () => {
+      return request(app.getHttpServer())
+        .get(`/api/locations/${'a'.repeat(129)}/latest`)
         .set('Authorization', AUTH)
         .expect(400);
     });
