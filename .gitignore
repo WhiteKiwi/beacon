@@ -65,3 +65,6 @@ pnpm-debug.log*
 
 # Local Claude settings
 .claude/
+
+# Server runtime config
+server/ecosystem.config.cjs
