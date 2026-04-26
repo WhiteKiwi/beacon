@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '../auth.guard.js';
 import { LocationDto } from './location.dto.js';
+import { LocationIdParamDto } from './location-id-param.dto.js';
 import { LocationsService } from './locations.service.js';
 
 @Controller('api/locations')
@@ -22,8 +23,8 @@ export class LocationsController {
   }
 
   @Get(':id/latest')
-  getLatest(@Param('id') id: string): LocationDto {
-    const location = this.locations.getLatest(id);
+  getLatest(@Param() params: LocationIdParamDto): LocationDto {
+    const location = this.locations.getLatest(params.id);
     if (!location) throw new NotFoundException();
     return location;
   }

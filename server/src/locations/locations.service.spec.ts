@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { BadRequestException } from '@nestjs/common';
 import { LocationsService } from './locations.service.js';
 
 jest.mock('fs', () => ({
@@ -91,11 +92,23 @@ describe('LocationsService', () => {
         expect.any(String),
       );
     });
+
+    it('unsafe id는 거부', () => {
+      expect(() =>
+        service.save({ ...loc(1), id: '../secret' }),
+      ).toThrow(BadRequestException);
+    });
   });
 
   describe('getLatest', () => {
     it('없는 id → undefined', () => {
       expect(service.getLatest('unknown')).toBeUndefined();
+    });
+
+    it('unsafe id는 거부', () => {
+      expect(() => service.getLatest('../secret')).toThrow(
+        BadRequestException,
+      );
     });
   });
 });

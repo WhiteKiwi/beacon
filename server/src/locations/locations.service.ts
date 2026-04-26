@@ -1,10 +1,19 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
 import { mkdirSync, readdirSync, readFileSync, promises } from 'fs';
 import { join } from 'path';
-import { LocationDto } from './location.dto.js';
+import { LocationDto, LOCATION_ID_PATTERN } from './location.dto.js';
 
 const DATA_DIR = join(process.cwd(), '.data');
 const MAX_ENTRIES = 50;
+
+function assertSafeId(id: string): string {
+  if (!LOCATION_ID_PATTERN.test(id)) {
+    throw new BadRequestException(
+      'id는 영문, 숫자, 하이픈, 밑줄만 사용할 수 있습니다.',
+    );
+  }
+  return id;
+}
 
 @Injectable()
 export class LocationsService implements OnModuleInit {
@@ -26,7 +35,7 @@ export class LocationsService implements OnModuleInit {
   }
 
   save(location: LocationDto): void {
-    const { id } = location;
+    const id = assertSafeId(location.id);
     const entries = this.cache.get(id) ?? [];
     const updated = [...entries, location].slice(-MAX_ENTRIES);
 
@@ -38,6 +47,6 @@ export class LocationsService implements OnModuleInit {
   }
 
   getLatest(id: string): LocationDto | undefined {
-    return this.cache.get(id)?.at(-1);
+    return this.cache.get(assertSafeId(id))?.at(-1);
   }
 }

@@ -94,6 +94,14 @@ describe('Locations (e2e)', () => {
         .send({ ...loc, timestamp: 'not-a-date' })
         .expect(400);
     });
+
+    it('id에 허용되지 않는 문자 포함 → 400', () => {
+      return request(app.getHttpServer())
+        .post('/api/locations')
+        .set('Authorization', AUTH)
+        .send({ ...loc, id: 'bad.id' })
+        .expect(400);
+    });
   });
 
   describe('GET /api/locations/:id/latest', () => {
@@ -120,6 +128,13 @@ describe('Locations (e2e)', () => {
       return request(app.getHttpServer())
         .get('/api/locations/kiwi/latest')
         .expect(404);
+    });
+
+    it('id에 허용되지 않는 문자 포함 → 400', () => {
+      return request(app.getHttpServer())
+        .get('/api/locations/bad.id/latest')
+        .set('Authorization', AUTH)
+        .expect(400);
     });
   });
 });

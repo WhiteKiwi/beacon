@@ -21,10 +21,12 @@ Content-Type: application/json
 
 | 필드 | 타입 | 필수 | 설명 |
 |---|---|---|---|
-| `id` | `string` | ✓ | 디바이스 또는 사용자 식별자 |
+| `id` | `string` | ✓ | 디바이스 또는 사용자 식별자. 영문, 숫자, 하이픈(`-`), 밑줄(`_`)만 허용 |
 | `latitude` | `number` | ✓ | 위도 (-90 ~ 90) |
 | `longitude` | `number` | ✓ | 경도 (-180 ~ 180) |
 | `timestamp` | `string` | ✓ | ISO 8601 형식 (`2026-04-24T10:00:00Z`) |
+
+`id`가 허용 규칙을 벗어나면 `400 Bad Request`를 반환한다.
 
 **Example**
 
@@ -50,6 +52,8 @@ Content-Type: application/json
 ```
 GET /api/locations/:id/latest
 ```
+
+`id`가 허용 규칙을 벗어나면 `400 Bad Request`를 반환한다.
 
 **Response**
 
