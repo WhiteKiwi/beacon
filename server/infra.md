@@ -4,7 +4,7 @@
 
 ```text
 Client
-  -> beacon.whitekiwi.link
+  -> macmini.whitekiwi.link
   -> Route 53 A record
   -> KT router public IP
   -> KT router port forwarding 10422/tcp
@@ -14,7 +14,7 @@ Client
 
 ## DNS
 
-- Domain: `beacon.whitekiwi.link`
+- Domain: `macmini.whitekiwi.link`
 - DNS provider: AWS Route 53
 - Record type: `A`
 - Target: public IP address for the KT router
@@ -34,7 +34,7 @@ nginx runs on the Mac mini and listens for HTTPS traffic on `10422/tcp`.
 
 Responsibilities:
 
-- Terminate TLS for `beacon.whitekiwi.link`
+- Terminate TLS for `macmini.whitekiwi.link`
 - Receive inbound HTTPS requests from the router
 - Proxy requests to the local Beacon server over HTTP
 
