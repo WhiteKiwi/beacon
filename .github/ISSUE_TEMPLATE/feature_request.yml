@@ -1,0 +1,19 @@
+name: Feature request
+description: 새로운 아이디어를 제안해 주세요.
+title: "feat: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 해결하려는 문제
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 제안
+      description: 원하는 동작과 고려한 대안을 설명해 주세요.
+    validations:
+      required: true
+

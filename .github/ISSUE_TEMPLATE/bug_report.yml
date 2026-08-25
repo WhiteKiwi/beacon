@@ -1,0 +1,32 @@
+name: Bug report
+description: 재현 가능한 문제를 알려주세요.
+title: "bug: "
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 문제
+      description: 기대한 동작과 실제 동작을 설명해 주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 재현 방법
+      placeholder: "1. …\n2. …"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: 환경
+      placeholder: iPhone 모델, iOS 버전 또는 Node.js 버전
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 로그
+      render: shell
+
