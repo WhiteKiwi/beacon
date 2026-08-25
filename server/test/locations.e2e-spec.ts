@@ -8,6 +8,8 @@ import { validationPipe } from '../src/validation.pipe.js';
 
 const SECRET = 'test-secret';
 const AUTH = `Bearer ${SECRET}`;
+const REVIEW_SECRET = 'review-test-secret';
+const REVIEW_AUTH = `Bearer ${REVIEW_SECRET}`;
 
 const loc = {
   id: 'kiwi',
@@ -27,6 +29,7 @@ describe('Locations (e2e)', () => {
 
   beforeAll(async () => {
     process.env['API_SECRET'] = SECRET;
+    process.env['REVIEW_API_SECRET'] = REVIEW_SECRET;
 
     const moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
@@ -45,6 +48,7 @@ describe('Locations (e2e)', () => {
   afterAll(async () => {
     await app.close();
     delete process.env['API_SECRET'];
+    delete process.env['REVIEW_API_SECRET'];
   });
 
   describe('POST /api/locations', () => {
@@ -149,6 +153,34 @@ describe('Locations (e2e)', () => {
       return request(app.getHttpServer())
         .get(`/api/locations/${'a'.repeat(129)}/latest`)
         .set('Authorization', AUTH)
+        .expect(400);
+    });
+  });
+
+  describe('POST /api/review/locations', () => {
+    it('전용 심사 토큰 → 204, 위치 미보관', async () => {
+      await request(app.getHttpServer())
+        .post('/api/review/locations')
+        .set('Authorization', REVIEW_AUTH)
+        .send({ ...loc, id: 'app-review' })
+        .expect(204);
+
+      expect(mockLocationsService.save).not.toHaveBeenCalled();
+    });
+
+    it('운영 토큰 → 404', () => {
+      return request(app.getHttpServer())
+        .post('/api/review/locations')
+        .set('Authorization', AUTH)
+        .send({ ...loc, id: 'app-review' })
+        .expect(404);
+    });
+
+    it('잘못된 body → 400', () => {
+      return request(app.getHttpServer())
+        .post('/api/review/locations')
+        .set('Authorization', REVIEW_AUTH)
+        .send({ ...loc, latitude: 91 })
         .expect(400);
     });
   });

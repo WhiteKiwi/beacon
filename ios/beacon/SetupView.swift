@@ -4,6 +4,7 @@ struct SetupView: View {
     @AppStorage("serverURL") private var serverURL = ""
     @AppStorage("deviceID") private var deviceID = ""
     @AppStorage("isActivated") private var isActivated = false
+    @AppStorage("analyticsEnabled") private var analyticsEnabled = false
     @State private var apiSecret = ""
 
     private var isFormValid: Bool {
@@ -24,9 +25,21 @@ struct SetupView: View {
                     SecureField("API Secret", text: $apiSecret)
                 }
 
+                Section("개인정보") {
+                    Toggle("익명 사용 분석 허용", isOn: $analyticsEnabled)
+                    Text("허용하면 앱 실행과 화면 사용 같은 익명 통계를 Firebase Analytics로 전송합니다. 정확한 위치와 서버 설정은 분석에 포함하지 않습니다.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    Link(
+                        "개인정보 처리방침",
+                        destination: URL(string: "https://github.com/WhiteKiwi/beacon/blob/main/PRIVACY.md")!
+                    )
+                }
+
                 Section {
                     Button("시작하기") {
                         CredentialsStore.apiSecret = apiSecret
+                        AppAnalytics.setCollectionEnabled(analyticsEnabled)
                         AppAnalytics.log("setup_completed")
                         LocationManager.shared.start()
                         isActivated = true
@@ -45,6 +58,9 @@ struct SetupView: View {
         .onAppear {
             apiSecret = CredentialsStore.apiSecret
             AppAnalytics.screen("setup")
+        }
+        .onChange(of: analyticsEnabled) { _, value in
+            AppAnalytics.setCollectionEnabled(value)
         }
     }
 }

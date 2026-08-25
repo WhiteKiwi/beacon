@@ -25,7 +25,7 @@
 | 저전력 백그라운드 전송 | 큰 위치 변화가 생겼을 때 iOS가 앱을 깨워 전송합니다. |
 | 직접 운영하는 서버 | NestJS API와 Bearer 인증으로 데이터 경로를 직접 통제합니다. |
 | 수동 전송과 이력 | 현재 위치를 즉시 보내고 최근 10건의 성공 여부를 확인합니다. |
-| 개인정보를 고려한 분석 | IDFA 없는 Firebase Analytics 구성으로 핵심 화면·동작만 측정합니다. |
+| 개인정보를 고려한 분석 | 기본 비활성화된 Firebase Analytics를 사용자가 직접 허용한 경우에만 사용합니다. |
 | 자동화된 배포 | GitHub Actions에서 서버/iOS를 검증하고 TestFlight 업로드를 수행합니다. |
 
 ## 아키텍처
@@ -62,6 +62,7 @@ pnpm start:dev
 3. 선택 사항으로 Firebase의 `GoogleService-Info.plist`를 `ios/beacon/`에 둡니다.
 4. 실기기에서 실행하고 HTTPS 서버 URL, Device ID, API Secret을 입력합니다.
 5. 백그라운드 전송을 위해 위치 접근을 **항상 허용**합니다.
+6. 익명 사용 분석은 선택 사항이며 기본적으로 꺼져 있습니다.
 
 API Secret은 iOS Keychain에 저장됩니다. Firebase 설정 파일, 인증서, 프로비저닝 프로파일과 App Store Connect 키는 `.gitignore`로 보호됩니다.
 
@@ -90,6 +91,7 @@ beacon/
 
 ## 문서
 
+- [개인정보 처리방침](PRIVACY.md) · [App Store 제출 메모](app-store/METADATA.md)
 - [iOS 명세](ios/SPEC.md) · [iOS 구현 메모](ios/IMPLEMENTATION.md) · [Analytics](ios/ANALYTICS.md)
 - [서버 명세](server/SPEC.md) · [서버 구현 메모](server/IMPLEMENTATION.md)
 - [기여 가이드](CONTRIBUTING.md) · [보안 정책](SECURITY.md)

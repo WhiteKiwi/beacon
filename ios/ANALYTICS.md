@@ -16,6 +16,11 @@ Beacon uses Google Analytics 4 through Firebase Analytics. The app links the
 Bitwarden on a new checkout. The app still builds and runs without it, but
 analytics is disabled until the file is included in the app bundle.
 
+Analytics collection is also disabled by default with
+`FIREBASE_ANALYTICS_COLLECTION_ENABLED = false`. It starts only after the user
+enables **익명 사용 분석 허용** during setup or in Settings. Turning the toggle
+off stops collection and resets the local Firebase analytics identifier.
+
 ## Events
 
 | Event | Parameters | Meaning |
@@ -33,5 +38,7 @@ Add `-FIRAnalyticsDebugEnabled` to the app scheme's launch arguments, run the
 app, and inspect Analytics DebugView in the Firebase console. Remove the launch
 argument after verification.
 
-Before distributing the app, update the App Store Connect privacy disclosure
-and the app privacy policy to reflect Firebase Analytics collection.
+App Store Connect disclosures must include Firebase's optional app-instance ID,
+coarse location, product interaction, and diagnostic processing. The maintained
+answers are in [`app-store/METADATA.md`](../app-store/METADATA.md), and the public
+policy is [`PRIVACY.md`](../PRIVACY.md).

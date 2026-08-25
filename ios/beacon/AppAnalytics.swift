@@ -24,6 +24,17 @@ enum AppAnalytics {
 
         FirebaseApp.configure(options: options)
         isConfigured = true
+        Analytics.setAnalyticsCollectionEnabled(
+            UserDefaults.standard.bool(forKey: "analyticsEnabled")
+        )
+    }
+
+    static func setCollectionEnabled(_ enabled: Bool) {
+        guard isConfigured else { return }
+        Analytics.setAnalyticsCollectionEnabled(enabled)
+        if !enabled {
+            Analytics.resetAnalyticsData()
+        }
     }
 
     static func screen(_ name: String) {
@@ -37,7 +48,10 @@ enum AppAnalytics {
     }
 
     static func log(_ name: String, parameters: [String: Any]? = nil) {
-        guard isConfigured else { return }
+        guard
+            isConfigured,
+            UserDefaults.standard.bool(forKey: "analyticsEnabled")
+        else { return }
         Analytics.logEvent(name, parameters: parameters)
     }
 }
