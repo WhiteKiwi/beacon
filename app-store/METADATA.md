@@ -86,4 +86,4 @@ secret, Device ID, and precise coordinates are excluded from Firebase Analytics 
 - [ ] App privacy answers match this document
 - [ ] Age rating and primary category are complete
 - [ ] Build, screenshot, review contact, and review notes are attached
-- [ ] Export compliance answer is complete
+- [x] `ITSAppUsesNonExemptEncryption` is `false` (standard Apple HTTPS only)
