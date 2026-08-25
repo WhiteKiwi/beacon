@@ -70,6 +70,7 @@ API Secret은 iOS Keychain에 저장됩니다. Firebase 설정 파일, 인증서
 ```text
 beacon/
 ├── .github/           # CI, TestFlight, Dependabot, 이슈 양식
+├── assets/brand/      # 앱 아이콘 고해상도 원본
 ├── ios/               # SwiftUI 앱과 Xcode 프로젝트
 │   ├── ANALYTICS.md   # 분석 이벤트와 개인정보 메모
 │   ├── SPEC.md        # 앱 동작 명세
