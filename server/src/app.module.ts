@@ -3,9 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { LocationsModule } from './locations/locations.module.js';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    LocationsModule,
-  ],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), LocationsModule],
 })
 export class AppModule {}

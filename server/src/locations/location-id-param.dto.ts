@@ -1,8 +1,5 @@
 import { Matches, MaxLength } from 'class-validator';
-import {
-  LOCATION_ID_MAX_LENGTH,
-  LOCATION_ID_PATTERN,
-} from './location.dto.js';
+import { LOCATION_ID_MAX_LENGTH, LOCATION_ID_PATTERN } from './location.dto.js';
 
 export class LocationIdParamDto {
   @MaxLength(LOCATION_ID_MAX_LENGTH, {

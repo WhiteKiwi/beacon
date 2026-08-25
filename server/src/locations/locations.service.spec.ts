@@ -102,23 +102,27 @@ describe('LocationsService', () => {
     });
 
     it('unsafe id는 거부', () => {
-      expect(() =>
-        service.save({ ...loc(1), id: '../secret' }),
-      ).toThrow(BadRequestException);
+      expect(() => service.save({ ...loc(1), id: '../secret' })).toThrow(
+        BadRequestException,
+      );
     });
 
     it('너무 긴 id는 거부', () => {
-      expect(() =>
-        service.save({ ...loc(1), id: 'a'.repeat(129) }),
-      ).toThrow(BadRequestException);
+      expect(() => service.save({ ...loc(1), id: 'a'.repeat(129) })).toThrow(
+        BadRequestException,
+      );
     });
 
     it('새 id가 상한을 넘으면 거부', () => {
-      (service as any).cache = new Map(
-        Array.from({ length: MAX_TRACKED_IDS }, (_, i) => [
-          `id-${i}`,
-          [loc(1)],
-        ]),
+      Reflect.set(
+        service,
+        'cache',
+        new Map(
+          Array.from({ length: MAX_TRACKED_IDS }, (_, i) => [
+            `id-${i}`,
+            [loc(1)],
+          ]),
+        ),
       );
 
       expect(() => service.save({ ...loc(1), id: 'fresh-id' })).toThrow(
@@ -133,9 +137,7 @@ describe('LocationsService', () => {
     });
 
     it('unsafe id는 거부', () => {
-      expect(() => service.getLatest('../secret')).toThrow(
-        BadRequestException,
-      );
+      expect(() => service.getLatest('../secret')).toThrow(BadRequestException);
     });
 
     it('너무 긴 id는 거부', () => {
