@@ -51,7 +51,7 @@ jobs:
           -authenticationKeyID "$ASC_KEY_ID"
           -authenticationKeyIssuerID "$ASC_ISSUER_ID"
           DEVELOPMENT_TEAM="$APPLE_TEAM_ID"
-          CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER"
+          CURRENT_PROJECT_VERSION="$(date -u +%Y%m%d%H%M)"
       - name: Upload to App Store Connect
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
