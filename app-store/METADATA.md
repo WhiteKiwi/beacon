@@ -63,7 +63,6 @@ Conservative disclosures include optional analytics and third-party SDK behavior
 | Coarse Location | Optional | No | No | Analytics |
 | Device ID (Firebase app-instance identifier) | Optional | No | No | Analytics |
 | Product Interaction | Optional | No | No | Analytics |
-| Other Diagnostic Data (send outcome) | Optional | No | No | Analytics |
 
 The app does not use advertising, IDFA, data brokerage, or cross-app tracking. Server URL, API
 secret, Device ID, and precise coordinates are excluded from Firebase Analytics events.
@@ -78,12 +77,15 @@ secret, Device ID, and precise coordinates are excluded from Firebase Analytics 
 
 ## Final checklist
 
-- [ ] Clean CI run on the exact commit submitted
-- [ ] TestFlight build reaches `VALID`
-- [ ] Review-only endpoint returns HTTP 204 over valid TLS
-- [ ] Review credentials are scoped and stored in Bitwarden
-- [ ] Privacy policy is reachable without authentication
-- [ ] App privacy answers match this document
-- [ ] Age rating and primary category are complete
-- [ ] Build, screenshot, review contact, and review notes are attached
+- [x] Clean CI run on the exact commit submitted
+- [x] TestFlight build reaches `VALID`
+- [x] Review-only endpoint returns HTTP 204 over valid TLS
+- [x] Review credentials are scoped and stored in Bitwarden
+- [x] Privacy policy is reachable without authentication
+- [x] App privacy answers match this document
+- [x] Age rating (4+) and primary category (Utilities) are complete
+- [x] Build, screenshot, review contact, and review notes are attached
 - [x] `ITSAppUsesNonExemptEncryption` is `false` (standard Apple HTTPS only)
+- [x] EU DSA account status is non-trader; it can be overridden per app later
+- [ ] Korea compliance contact verification is complete
+- [ ] Version is added and submitted to App Review
