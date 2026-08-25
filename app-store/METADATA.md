@@ -84,8 +84,9 @@ secret, Device ID, and precise coordinates are excluded from Firebase Analytics 
 - [x] Privacy policy is reachable without authentication
 - [x] App privacy answers match this document
 - [x] Age rating (4+) and primary category (Utilities) are complete
-- [x] Build, screenshot, review contact, and review notes are attached
+- [x] Build, iPhone and 13-inch iPad screenshots, review contact, and review notes are attached
+- [x] Starting price is free in all storefronts
 - [x] `ITSAppUsesNonExemptEncryption` is `false` (standard Apple HTTPS only)
 - [x] EU DSA account status is non-trader; it can be overridden per app later
 - [x] Korea compliance contact verification is complete; the BRN is stored only in Bitwarden
-- [ ] Version is added and submitted to App Review
+- [x] Version 1.0 (build 202608250838) is submitted and waiting for App Review
