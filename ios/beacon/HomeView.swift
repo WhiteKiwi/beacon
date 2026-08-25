@@ -67,6 +67,7 @@ struct HomeView: View {
             }
         }
         .onAppear {
+            AppAnalytics.screen("home")
             LocationManager.shared.start()
         }
     }
@@ -74,6 +75,10 @@ struct HomeView: View {
     private func sendManually() {
         isSending = true
         LocationManager.shared.sendManually { error in
+            AppAnalytics.log(
+                "manual_location_send",
+                parameters: ["result": error == nil ? "success" : "failure"]
+            )
             isSending = false
             errorMessage = error
         }

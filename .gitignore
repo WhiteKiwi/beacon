@@ -28,6 +28,10 @@ Package.resolved
 Pods/
 *.xcworkspace
 !*.xcodeproj/project.xcworkspace
+!ios/beacon.xcodeproj/project.xcworkspace/
+!ios/beacon.xcodeproj/project.xcworkspace/xcshareddata/
+!ios/beacon.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+!ios/beacon.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 
 # Carthage
 Carthage/Build/
@@ -42,6 +46,7 @@ fastlane/test_output/
 *.p12
 *.mobileprovision
 AuthKey_*.p8
+ios/beacon/GoogleService-Info.plist
 
 # Node.js / NestJS
 node_modules/

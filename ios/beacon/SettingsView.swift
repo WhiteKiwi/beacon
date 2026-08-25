@@ -3,7 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @AppStorage("serverURL") private var serverURL = ""
     @AppStorage("deviceID") private var deviceID = ""
-    @AppStorage("apiSecret") private var apiSecret = ""
+    @State private var apiSecret = ""
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -21,5 +21,12 @@ struct SettingsView: View {
         }
         .navigationTitle("설정")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            apiSecret = CredentialsStore.apiSecret
+            AppAnalytics.screen("settings")
+        }
+        .onChange(of: apiSecret) { _, value in
+            CredentialsStore.apiSecret = value
+        }
     }
 }

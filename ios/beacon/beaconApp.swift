@@ -16,7 +16,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        LocationManager.shared.start()
+        AppAnalytics.configure()
+        if UserDefaults.standard.bool(forKey: "isActivated") {
+            LocationManager.shared.resumeMonitoring()
+        }
         return true
     }
 }

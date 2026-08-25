@@ -31,6 +31,11 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         manager.startMonitoringSignificantLocationChanges()
     }
 
+    func resumeMonitoring() {
+        guard manager.authorizationStatus == .authorizedAlways else { return }
+        manager.startMonitoringSignificantLocationChanges()
+    }
+
     func sendManually(completion: @escaping (String?) -> Void) {
         guard let location = manager.location else {
             completion("현재 위치를 가져올 수 없습니다.\n위치 권한을 확인해주세요.")
@@ -78,7 +83,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
 
         let id = defaults.string(forKey: "deviceID") ?? ""
-        let secret = defaults.string(forKey: "apiSecret") ?? ""
+        let secret = CredentialsStore.apiSecret
         let body: [String: Any] = [
             "id": id,
             "latitude": location.coordinate.latitude,
