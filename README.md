@@ -93,7 +93,7 @@ beacon/
 
 ## 문서
 
-- [개인정보 처리방침](PRIVACY.md) · [App Store 제출 메모](app-store/METADATA.md)
+- [고객 지원](SUPPORT.md) · [개인정보 처리방침](PRIVACY.md) · [App Store 제출 메모](app-store/METADATA.md)
 - [iOS 명세](ios/SPEC.md) · [iOS 구현 메모](ios/IMPLEMENTATION.md) · [Analytics](ios/ANALYTICS.md)
 - [서버 명세](server/SPEC.md) · [서버 구현 메모](server/IMPLEMENTATION.md)
 - [기여 가이드](CONTRIBUTING.md) · [보안 정책](SECURITY.md)

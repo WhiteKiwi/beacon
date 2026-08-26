@@ -21,6 +21,7 @@
 ## 이력 저장
 
 - `UserDefaults`에 `[LocationEntry]` JSON으로 저장
+- 앱의 `UserDefaults` 접근은 `PrivacyInfo.xcprivacy`에 승인 사유 `CA92.1`로 선언
 - 최대 10건 유지 (초과 시 오래된 것 제거)
 - 로드 시 `timestamp` 내림차순 정렬 (최신이 맨 위)
 - `LocationEntry`에 `success: Bool` 포함

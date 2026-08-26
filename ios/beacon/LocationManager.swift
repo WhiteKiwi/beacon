@@ -19,6 +19,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let historyKey = "locationHistory"
     private let maxHistory = 10
     private static let iso8601 = ISO8601DateFormatter()
+    private var manualSendCompletion: ((String?) -> Void)?
 
     private override init() {
         super.init()
@@ -27,23 +28,30 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
 
     func start() {
-        manager.requestAlwaysAuthorization()
-        manager.startMonitoringSignificantLocationChanges()
+        advanceAuthorizationAndMonitoring()
     }
 
     func resumeMonitoring() {
         guard manager.authorizationStatus == .authorizedAlways else { return }
-        manager.startMonitoringSignificantLocationChanges()
+        startSignificantLocationMonitoringIfAvailable()
     }
 
     func sendManually(completion: @escaping (String?) -> Void) {
-        guard let location = manager.location else {
-            completion("현재 위치를 가져올 수 없습니다.\n위치 권한을 확인해주세요.")
+        guard manualSendCompletion == nil else {
+            completion("이미 현재 위치를 확인하고 있습니다.")
             return
         }
-        post(location: location) { [weak self] error in
-            self?.appendHistory(location, success: error == nil)
-            completion(error)
+
+        manualSendCompletion = completion
+        switch manager.authorizationStatus {
+        case .authorizedAlways, .authorizedWhenInUse:
+            manager.requestLocation()
+        case .notDetermined:
+            manager.requestWhenInUseAuthorization()
+        case .denied, .restricted:
+            finishManualSend(error: "위치 접근이 허용되지 않았습니다.\n설정에서 Beacon의 위치 권한을 허용해 주세요.")
+        @unknown default:
+            finishManualSend(error: "현재 위치 권한 상태를 확인할 수 없습니다.")
         }
     }
 
@@ -51,6 +59,62 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         guard let location = locations.last else { return }
         post(location: location) { [weak self] error in
             self?.appendHistory(location, success: error == nil)
+            self?.finishManualSend(error: error)
+        }
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        guard manualSendCompletion != nil else { return }
+        finishManualSend(error: "현재 위치를 가져오지 못했습니다.\n잠시 후 다시 시도해 주세요.\n\(error.localizedDescription)")
+    }
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        switch manager.authorizationStatus {
+        case .authorizedAlways:
+            startSignificantLocationMonitoringIfAvailable()
+            requestManualLocationIfNeeded()
+        case .authorizedWhenInUse:
+            requestManualLocationIfNeeded()
+            manager.requestAlwaysAuthorization()
+        case .denied, .restricted:
+            finishManualSend(error: "위치 접근이 허용되지 않았습니다.\n설정에서 Beacon의 위치 권한을 허용해 주세요.")
+        case .notDetermined:
+            break
+        @unknown default:
+            finishManualSend(error: "현재 위치 권한 상태를 확인할 수 없습니다.")
+        }
+    }
+
+    private func advanceAuthorizationAndMonitoring() {
+        switch manager.authorizationStatus {
+        case .notDetermined:
+            manager.requestWhenInUseAuthorization()
+        case .authorizedWhenInUse:
+            manager.requestAlwaysAuthorization()
+        case .authorizedAlways:
+            startSignificantLocationMonitoringIfAvailable()
+        case .denied, .restricted:
+            break
+        @unknown default:
+            break
+        }
+    }
+
+    private func startSignificantLocationMonitoringIfAvailable() {
+        guard CLLocationManager.significantLocationChangeMonitoringAvailable() else { return }
+        manager.startMonitoringSignificantLocationChanges()
+    }
+
+    private func requestManualLocationIfNeeded() {
+        guard manualSendCompletion != nil else { return }
+        manager.requestLocation()
+    }
+
+    private func finishManualSend(error: String?) {
+        guard let completion = manualSendCompletion else { return }
+        manualSendCompletion = nil
+        DispatchQueue.main.async {
+            completion(error)
         }
     }
 
