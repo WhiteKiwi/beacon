@@ -117,4 +117,6 @@ secret, Device ID, and precise coordinates are excluded from Firebase Analytics 
 - [x] `ITSAppUsesNonExemptEncryption` is `false` (standard Apple HTTPS only)
 - [x] EU DSA account status is non-trader; it can be overridden per app later
 - [x] Korea compliance contact verification is complete; the BRN is stored only in Bitwarden
-- [x] Version 1.0 (build 202608250838) is submitted and waiting for App Review
+- [x] Version 1.0 (build 202608250838) received a Guideline 2.1 information request
+- [x] Replacement build 202608261619 is processed and ready to submit
+- [ ] Attach the physical-device screen recording, select build 202608261619, and resubmit
