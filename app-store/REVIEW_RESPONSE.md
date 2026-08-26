@@ -10,7 +10,8 @@ the App Store Connect password field and Bitwarden.
 - Version: 1.0
 - Previous build: 202608250838
 - Replacement build: 202608261619
-- Replacement build status: Processed / Ready to Submit
+- Replacement build status: Processed, selected, and saved for version 1.0
+- App Review Information: support URL and all seven requested answers saved
 - Remaining artifact: physical-device screen recording from iPhone 17 Pro on iOS 26.6
 
 ## App Review Information notes

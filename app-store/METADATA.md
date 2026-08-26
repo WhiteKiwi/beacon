@@ -119,4 +119,6 @@ secret, Device ID, and precise coordinates are excluded from Firebase Analytics 
 - [x] Korea compliance contact verification is complete; the BRN is stored only in Bitwarden
 - [x] Version 1.0 (build 202608250838) received a Guideline 2.1 information request
 - [x] Replacement build 202608261619 is processed and ready to submit
-- [ ] Attach the physical-device screen recording, select build 202608261619, and resubmit
+- [x] Support URL and the seven requested App Review Information answers are saved
+- [x] Replacement build 202608261619 is selected for version 1.0
+- [ ] Attach the physical-device screen recording and submit the review update
