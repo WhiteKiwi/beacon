@@ -1,0 +1,56 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ios/**
+      - .github/workflows/ios-ci.yml
+  pull_request:
+    paths:
+      - ios/**
+      - .github/workflows/ios-ci.yml
+
+concurrency:
+  group: ios-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ios:
+    name: iOS
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v7
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.6.app/Contents/Developer
+      - name: Resolve Xcode cache identity
+        id: xcode
+        run: echo "version=$(xcodebuild -version | shasum -a 256 | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      - name: Restore Swift package downloads
+        id: swiftpm-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .ci/SourcePackages
+          key: swiftpm-${{ runner.os }}-${{ runner.arch }}-${{ steps.xcode.outputs.version }}-${{ hashFiles('ios/beacon.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          restore-keys: |
+            swiftpm-${{ runner.os }}-${{ runner.arch }}-${{ steps.xcode.outputs.version }}-
+      - name: Build
+        run: >-
+          xcodebuild build
+          -project ios/beacon.xcodeproj
+          -scheme beacon
+          -configuration Debug
+          -destination 'generic/platform=iOS Simulator'
+          -clonedSourcePackagesDirPath .ci/SourcePackages
+          ARCHS=arm64
+          ONLY_ACTIVE_ARCH=YES
+          CODE_SIGNING_ALLOWED=NO
+      - name: Save Swift package downloads
+        if: github.ref == 'refs/heads/main' && steps.swiftpm-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .ci/SourcePackages
+          key: swiftpm-${{ runner.os }}-${{ runner.arch }}-${{ steps.xcode.outputs.version }}-${{ hashFiles('ios/beacon.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}

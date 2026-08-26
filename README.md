@@ -9,7 +9,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/WhiteKiwi/beacon/actions/workflows/ci.yml"><img src="https://github.com/WhiteKiwi/beacon/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/WhiteKiwi/beacon/actions/workflows/ci.yml"><img src="https://github.com/WhiteKiwi/beacon/actions/workflows/ci.yml/badge.svg" alt="Server CI"></a>
+  <a href="https://github.com/WhiteKiwi/beacon/actions/workflows/ios-ci.yml"><img src="https://github.com/WhiteKiwi/beacon/actions/workflows/ios-ci.yml/badge.svg" alt="iOS CI"></a>
   <img src="https://img.shields.io/badge/iOS-17%2B-000000?logo=apple" alt="iOS 17+">
   <img src="https://img.shields.io/badge/Swift-5-F05138?logo=swift&logoColor=white" alt="Swift 5">
   <img src="https://img.shields.io/badge/NestJS-11-E0234E?logo=nestjs&logoColor=white" alt="NestJS 11">
@@ -83,7 +84,8 @@ beacon/
 
 ## CI/CD
 
-- `CI`: 모든 PR과 `main` 푸시에서 서버 lint/test/build 및 iOS Simulator 빌드를 실행합니다.
+- `Server CI`: `server/**`가 바뀐 PR과 `main` 푸시에서 서버 lint/test/build를 실행합니다.
+- `iOS CI`: `ios/**`가 바뀐 PR과 `main` 푸시에서 Swift Package 다운로드 캐시를 복원하고 ARM64 iOS Simulator 빌드를 실행합니다.
 - `TestFlight`: Actions에서 수동 실행하거나 `ios-v*` 태그를 푸시하면 고정 Distribution 인증서와 명시적인 App Store 프로파일로 서명한 아카이브를 App Store Connect에 업로드합니다. Hosted Runner가 Apple 계정에 인증서나 프로파일을 생성할 수 없도록 자동 프로비저닝은 사용하지 않습니다.
 - 릴리스 비밀값은 GitHub의 `testflight` 환경에 저장하며 저장소 파일로 만들지 않습니다.
 

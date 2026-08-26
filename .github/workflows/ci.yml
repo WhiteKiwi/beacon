@@ -1,9 +1,15 @@
-name: CI
+name: Server CI
 
 on:
   push:
     branches: [main]
+    paths:
+      - server/**
+      - .github/workflows/ci.yml
   pull_request:
+    paths:
+      - server/**
+      - .github/workflows/ci.yml
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -34,21 +40,3 @@ jobs:
       - run: pnpm exec jest --runInBand
       - run: pnpm test:e2e
       - run: pnpm build
-
-  ios:
-    name: iOS
-    runs-on: macos-26
-    steps:
-      - uses: actions/checkout@v7
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_26.6.app/Contents/Developer
-      - name: Resolve packages
-        run: xcodebuild -resolvePackageDependencies -project ios/beacon.xcodeproj -scheme beacon
-      - name: Build
-        run: >-
-          xcodebuild build
-          -project ios/beacon.xcodeproj
-          -scheme beacon
-          -configuration Debug
-          -destination 'generic/platform=iOS Simulator'
-          CODE_SIGNING_ALLOWED=NO
