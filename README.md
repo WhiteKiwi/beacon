@@ -87,7 +87,7 @@ beacon/
 - `TestFlight`: Actions에서 수동 실행하거나 `ios-v*` 태그를 푸시하면 고정 Distribution 인증서와 명시적인 App Store 프로파일로 서명한 아카이브를 App Store Connect에 업로드합니다. Hosted Runner가 Apple 계정에 인증서나 프로파일을 생성할 수 없도록 자동 프로비저닝은 사용하지 않습니다.
 - 릴리스 비밀값은 GitHub의 `testflight` 환경에 저장하며 저장소 파일로 만들지 않습니다.
 
-필요한 Actions secrets는 `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`, `APPLE_TEAM_ID`, `GOOGLE_SERVICE_INFO_PLIST_BASE64`, `APPLE_DISTRIBUTION_CERTIFICATE_P12_BASE64`, `APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD`, `APP_STORE_PROVISIONING_PROFILE_BASE64`입니다. 서명 인증서와 `Beacon App Store CI` 프로파일은 2027-08-26 전에 Bitwarden 백업을 기준으로 함께 교체해야 합니다.
+필요한 Actions secrets는 `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`, `APPLE_TEAM_ID`, `GOOGLE_SERVICE_INFO_PLIST_BASE64`, `APPLE_DISTRIBUTION_CERTIFICATE_P12_BASE64`, `APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD`, `APP_STORE_PROVISIONING_PROFILE_BASE64`입니다. 서명 인증서와 `Beacon App Store CI` 프로파일은 2027-08-26 전에 Bitwarden 백업을 기준으로 함께 교체해야 합니다. PKCS#12는 Keychain Access 또는 macOS 호환 legacy cipher로 내보내고, GitHub에 교체하기 전에 일회용 로컬 Keychain import를 검증합니다. OpenSSL 3 기본 형식은 GitHub macOS Runner의 `security`에서 import되지 않습니다.
 
 ## 문서
 
