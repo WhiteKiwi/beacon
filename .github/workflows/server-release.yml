@@ -1,0 +1,87 @@
+name: Server Release
+
+on:
+  push:
+    tags:
+      - server-v*
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: beacon-server-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.repository == 'WhiteKiwi/beacon'
+    runs-on: macos-15
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: server/pnpm-lock.yaml
+      - name: Test and build server
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm exec eslint "{src,apps,libs,test}/**/*.ts"
+          pnpm exec jest --runInBand
+          pnpm test:e2e
+          pnpm build
+      - name: Package production dependencies
+        run: |
+          package_dir="$RUNNER_TEMP/beacon-server-package"
+          pnpm --filter server deploy --legacy --prod "$package_dir"
+          mkdir -p ../release
+          tar -C "$package_dir" -czf \
+            "../release/beacon-server_${GITHUB_REF_NAME}_macOS_arm64.tar.gz" \
+            dist node_modules package.json
+          cd ../release
+          shasum -a 256 \
+            "beacon-server_${GITHUB_REF_NAME}_macOS_arm64.tar.gz" > checksums.txt
+      - name: Attest server archive
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: release/beacon-server_${{ github.ref_name }}_macOS_arm64.tar.gz
+      - name: Publish GitHub release
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME"
+          "release/beacon-server_${GITHUB_REF_NAME}_macOS_arm64.tar.gz"
+          release/checksums.txt
+          --verify-tag --generate-notes --title "$GITHUB_REF_NAME"
+      - name: Request Mac mini deployment
+        working-directory: .
+        env:
+          HOME_HUB_ACTIONS_TOKEN: ${{ secrets.HOME_HUB_ACTIONS_TOKEN }}
+        run: |
+          test -n "$HOME_HUB_ACTIONS_TOKEN"
+          jq -n \
+            --arg ref main \
+            --arg service beacon \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg tag "$GITHUB_REF_NAME" \
+            --arg sha "$GITHUB_SHA" \
+            '{ref: $ref, inputs: {service: $service, repository: $repository, tag: $tag, sha: $sha}}' \
+            >"$RUNNER_TEMP/home-hub-dispatch.json"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer $HOME_HUB_ACTIONS_TOKEN" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --data @"$RUNNER_TEMP/home-hub-dispatch.json" \
+            https://api.github.com/repos/WhiteKiwi/home-hub/actions/workflows/deploy.yml/dispatches
+
