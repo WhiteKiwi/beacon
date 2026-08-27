@@ -64,6 +64,7 @@ jobs:
           release/checksums.txt
           --verify-tag --generate-notes --title "$GITHUB_REF_NAME"
       - name: Request Mac mini deployment
+        if: vars.HOME_HUB_DEPLOY_ENABLED == 'true'
         working-directory: .
         env:
           HOME_HUB_ACTIONS_TOKEN: ${{ secrets.HOME_HUB_ACTIONS_TOKEN }}
@@ -84,4 +85,3 @@ jobs:
             --header "X-GitHub-Api-Version: 2022-11-28" \
             --data @"$RUNNER_TEMP/home-hub-dispatch.json" \
             https://api.github.com/repos/WhiteKiwi/home-hub/actions/workflows/deploy.yml/dispatches
-
