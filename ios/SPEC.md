@@ -26,7 +26,7 @@
 
 | 항목 | 설명 |
 |------|------|
-| Server URL | 위치를 전송할 서버 엔드포인트 |
+| Server URL | 위치를 전송할 서버 엔드포인트. 기본값은 `https://beacon.whitekiwi.link/api/locations` |
 | Device ID | 기기 식별자 (전송 바디의 `id` 필드) |
 | API Secret | Bearer 토큰 (`Authorization: Bearer {값}`) |
 
@@ -42,3 +42,6 @@
 - 셀 타워 기반으로 약 500m 이상 이동 시 트리거
 - 배터리 소모가 낮음 (GPS 상시 사용 없음)
 - 앱이 종료된 상태에서도 iOS가 재실행하여 콜백 호출
+
+기존 `https://macmini.whitekiwi.link:10422` 설정은 앱 시작 시 표준 443 기반
+`https://beacon.whitekiwi.link`로 자동 변환합니다.

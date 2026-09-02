@@ -16,8 +16,18 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        let defaults = UserDefaults.standard
+        let legacyBaseURL = "https://macmini.whitekiwi.link:10422"
+        let currentBaseURL = "https://beacon.whitekiwi.link"
+        if let serverURL = defaults.string(forKey: "serverURL"),
+           serverURL.hasPrefix(legacyBaseURL) {
+            defaults.set(
+                currentBaseURL + String(serverURL.dropFirst(legacyBaseURL.count)),
+                forKey: "serverURL"
+            )
+        }
         AppAnalytics.configure()
-        if UserDefaults.standard.bool(forKey: "isActivated") {
+        if defaults.bool(forKey: "isActivated") {
             LocationManager.shared.resumeMonitoring()
         }
         return true

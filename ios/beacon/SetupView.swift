@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SetupView: View {
-    @AppStorage("serverURL") private var serverURL = ""
+    @AppStorage("serverURL") private var serverURL = "https://beacon.whitekiwi.link/api/locations"
     @AppStorage("deviceID") private var deviceID = ""
     @AppStorage("isActivated") private var isActivated = false
     @AppStorage("analyticsEnabled") private var analyticsEnabled = false

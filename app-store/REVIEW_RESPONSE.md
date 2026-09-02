@@ -21,7 +21,7 @@ Paste the following into the Notes field for the replacement submission:
 ```text
 Beacon does not use an account login. The username and password fields contain the Device ID and review-only API secret used during initial setup.
 
-Server URL: https://macmini.whitekiwi.link:10422/api/review/locations
+Server URL: https://beacon.whitekiwi.link/api/review/locations
 Device ID: app-review
 
 SETUP AND ACCESS
