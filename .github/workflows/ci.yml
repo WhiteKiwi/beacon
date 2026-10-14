@@ -12,7 +12,7 @@ on:
       - .github/workflows/ci.yml
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -21,6 +21,7 @@ permissions:
 jobs:
   server:
     name: Server
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -35,8 +36,13 @@ jobs:
           node-version: 24
           cache: pnpm
           cache-dependency-path: server/pnpm-lock.yaml
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm exec eslint "{src,apps,libs,test}/**/*.ts"
-      - run: pnpm exec jest --runInBand
-      - run: pnpm test:e2e
-      - run: pnpm build
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Static checks
+        run: pnpm exec eslint "{src,apps,libs,test}/**/*.ts"
+      - name: Unit tests
+        run: pnpm test
+      - name: Core HTTP component contracts
+        run: pnpm test:e2e
+      - name: Build server
+        run: pnpm build
