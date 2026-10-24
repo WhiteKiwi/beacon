@@ -101,3 +101,12 @@ beacon/
 ## 기여
 
 버그와 기능 제안은 이슈 템플릿을 이용해 주세요. 개발 환경과 PR 규칙은 [CONTRIBUTING.md](CONTRIBUTING.md)에 정리되어 있습니다.
+
+## Server operations
+
+The production server runs on Ubuntu K3s at the existing API URL.
+Use the manual **Publish image** workflow from `main` to validate and publish a Linux AMD64
+GHCR image, then select its immutable digest through the infra repository's manual Argo workflow.
+See [Beacon operations](https://github.com/WhiteKiwi/infra/blob/main/services/beacon/K3S.md).
+The former Mac ARM64 archive release workflow and Mac deployment path are retired.
+Image publication alone does not change production. iOS release workflows remain independent.
