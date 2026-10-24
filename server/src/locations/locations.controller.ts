@@ -18,8 +18,8 @@ export class LocationsController {
   constructor(private readonly locations: LocationsService) {}
 
   @Post()
-  save(@Body() dto: LocationDto): void {
-    this.locations.save(dto);
+  save(@Body() dto: LocationDto): Promise<void> {
+    return this.locations.save(dto);
   }
 
   @Get(':id/latest')

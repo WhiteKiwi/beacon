@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ServiceUnavailableException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { App } from 'supertest/types';
@@ -52,6 +52,16 @@ describe('Locations (e2e)', () => {
   });
 
   describe('POST /api/locations', () => {
+    it('storage failure returns 503 instead of acknowledging a write', async () => {
+      mockLocationsService.save.mockRejectedValueOnce(
+        new ServiceUnavailableException(),
+      );
+      await request(app.getHttpServer())
+        .post('/api/locations')
+        .set('Authorization', AUTH)
+        .send(loc)
+        .expect(503);
+    });
     it('유효한 토큰 → 201', () => {
       return request(app.getHttpServer())
         .post('/api/locations')
@@ -184,4 +194,7 @@ describe('Locations (e2e)', () => {
         .expect(400);
     });
   });
+
+  it('health responds without credentials', () =>
+    request(app.getHttpServer()).get('/healthz').expect(200, { status: 'ok' }));
 });

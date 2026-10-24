@@ -7,8 +7,9 @@ COPY dist ./dist
 COPY node_modules ./node_modules
 COPY package.json healthcheck.cjs ./
 RUN mkdir -p /data/.data && chown -R 501:20 /data
+RUN test -x /usr/bin/flock
 ENV NODE_ENV=production ENV=live PORT=20422 BEACON_BIND_HOST=0.0.0.0
 USER 501:20
 WORKDIR /data
 HEALTHCHECK --interval=15s --timeout=4s --start-period=30s --retries=3 CMD ["node", "/app/healthcheck.cjs"]
-CMD ["node", "--env-file=/run/beacon/production.env", "/app/dist/main.js"]
+CMD ["/usr/bin/flock", "--exclusive", "--nonblock", "--no-fork", "/data/.data/.writer.lock", "node", "--env-file=/run/beacon/production.env", "/app/dist/main.js"]

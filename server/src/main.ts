@@ -6,6 +6,7 @@ import { listenHost } from './listen-host.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableShutdownHooks();
   app.useGlobalPipes(validationPipe);
 
   if (process.env.ENV !== 'live') {
