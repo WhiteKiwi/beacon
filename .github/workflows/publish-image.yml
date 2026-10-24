@@ -16,7 +16,7 @@ jobs:
 
   publish:
     needs: checks
-    runs-on: whitekiwi-image-build
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       actions: read
@@ -83,40 +83,8 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
 
-      - name: Prepare the runner's build proxy
-        id: proxy
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import os
-          from urllib.parse import urlsplit
-
-          outputs = {}
-          for name in ('HTTP_PROXY', 'HTTPS_PROXY'):
-              value = os.environ.get(name, '')
-              url = urlsplit(value)
-              if (url.scheme != 'http' or url.username or url.password
-                      or url.hostname != 'image-build-proxy.arc-image-build.svc.cluster.local'
-                      or url.port != 3128 or '\n' in value or '\r' in value):
-                  raise SystemExit('The dedicated image-build proxy is not configured.')
-              outputs[name.lower()] = value
-          outputs['no_proxy'] = 'localhost,127.0.0.1,::1'
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
-              for name, value in outputs.items():
-                  output.write(f'{name}={value}\n')
-          PY
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
-        with:
-          driver-opts: |
-            env.HTTP_PROXY=${{ steps.proxy.outputs.http_proxy }}
-            env.HTTPS_PROXY=${{ steps.proxy.outputs.https_proxy }}
-            env.NO_PROXY=localhost
-            env.http_proxy=${{ steps.proxy.outputs.http_proxy }}
-            env.https_proxy=${{ steps.proxy.outputs.https_proxy }}
-            env.no_proxy=localhost
 
       - name: Log in to GHCR
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
@@ -151,12 +119,6 @@ jobs:
           platforms: ${{ env.PLATFORM }}
           build-args: |
             REVISION=${{ github.sha }}
-            HTTP_PROXY=${{ steps.proxy.outputs.http_proxy }}
-            HTTPS_PROXY=${{ steps.proxy.outputs.https_proxy }}
-            NO_PROXY=${{ steps.proxy.outputs.no_proxy }}
-            http_proxy=${{ steps.proxy.outputs.http_proxy }}
-            https_proxy=${{ steps.proxy.outputs.https_proxy }}
-            no_proxy=${{ steps.proxy.outputs.no_proxy }}
           push: true
           tags: ${{ env.IMAGE }}:${{ steps.metadata.outputs.tag }}
           provenance: mode=min
