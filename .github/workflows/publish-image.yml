@@ -67,12 +67,12 @@ jobs:
                 package_type: 'container',
                 package_name: 'beacon-server',
               });
-              if (pkg.visibility !== 'private') {
-                throw new Error('Refusing to publish: the existing package is not private.');
+              if (pkg.visibility !== 'public') {
+                throw new Error('Refusing to publish: the existing Beacon package is not public.');
               }
             } catch (error) {
               if (error.status !== 404) throw error;
-              core.info('The first publication creates a private GHCR package.');
+              core.info('The package is absent; verify its public visibility after publication.');
             }
 
       - name: Confirm the checked-out source
@@ -182,13 +182,13 @@ jobs:
                 package_name: 'beacon-server',
               },
             );
-            if (pkg.visibility !== 'private') {
-              throw new Error('The published package is not private.');
+            if (pkg.visibility !== 'public') {
+              throw new Error('The published Beacon package is not public.');
             }
             const image = `${process.env.IMAGE}:${process.env.IMAGE_TAG}`;
             const pinned = `${process.env.IMAGE}@${process.env.PUBLISHED_DIGEST}`;
             await core.summary
-              .addHeading('Private image published')
+              .addHeading('Beacon image published')
               .addTable([
                 [{data: 'Field', header: true}, {data: 'Value', header: true}],
                 ['Image', image],
