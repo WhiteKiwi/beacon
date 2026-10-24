@@ -79,7 +79,7 @@ export class LocationsService implements OnModuleInit, OnModuleDestroy {
       );
       const temporary = join(this.dataDir, `.${randomUUID()}.tmp`);
       try {
-        const file = await promises.open(temporary, 'wx', 0o600);
+        const file = await promises.open(temporary, 'wx', 0o640);
         try {
           await file.writeFile(JSON.stringify(updated, null, 2));
           await file.sync();
